@@ -8,5 +8,5 @@
     </Gather>
 
     <Say>No input received. Redirecting to the main menu.</Say>
-    <Redirect>/ivr-menu-123.xml</Redirect>
+    <Redirect>/twiml/ivr-menu-123.xml</Redirect>
 </Response>
