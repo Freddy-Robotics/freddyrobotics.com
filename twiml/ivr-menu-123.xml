@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Gather numDigits="1" timeout="5" action="/twiml/ivr-handle-123.xml">
+    <Gather numDigits="1" timeout="5" action="/twiml/ivr-handler-123.xml">
         <Say>Welcome to Jim's phone system.</Say>
         <Say>For Sales, press 1.</Say>
         <Say>For Marketing, press 2.</Say>
