@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Gather numDigits="1" timeout="5" action="/ivr-handle-123.xml">
+        <Say>Welcome to Jim's phone system.</Say>
+        <Say>For Sales, press 1.</Say>
+        <Say>For Marketing, press 2.</Say>
+        <Say>For Other inquiries, press 3.</Say>
+    </Gather>
+
+    <Say>No input received. Redirecting to the main menu.</Say>
+    <Redirect>/ivr-menu-123.xml</Redirect>
+</Response>
