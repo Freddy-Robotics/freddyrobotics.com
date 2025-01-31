@@ -61,10 +61,173 @@
         <p>Parents add a list of potential allergens during setup, and sets a priority level. When Freddy's camera detects any of of these potential allergens in camera using GPT-4o, we'll immediately send a notification to the attached parent, alongside any other contact information listed (your nanny, daycare facility, etc.). Parents can also adjust the confidence level, or likelyhood to trigger a false alarm. </p>
         <b>How do I contact you?</b>
         <p>Reach out to Jim at <a href="mailto:jim@freddyrobotics.com">jim@freddyrobotics.com</a> or <a href="tel:+19842698841">984-269-8841</a></p>
+        
+        <h3>Take a break and play Candy Match!</h3>
+        <canvas id="gameCanvas" width="400" height="400" style="background: #f0f0f0; border-radius: 3px;"></canvas>
+        <p><small>Click and drag candies to match 3 or more!</small></p>
+        
+        <script>
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            const GRID_SIZE = 8;
+            const CELL_SIZE = canvas.width / GRID_SIZE;
+            const COLORS = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'];
+            
+            let grid = [];
+            let selectedCandy = null;
+            let draggedCandy = null;
+            
+            // Initialize grid
+            function initGrid() {
+                for(let i = 0; i < GRID_SIZE; i++) {
+                    grid[i] = [];
+                    for(let j = 0; j < GRID_SIZE; j++) {
+                        grid[i][j] = {
+                            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                            x: i,
+                            y: j,
+                            targetY: j
+                        };
+                    }
+                }
+            }
+            
+            // Draw a candy
+            function drawCandy(candy) {
+                const x = candy.x * CELL_SIZE + CELL_SIZE/2;
+                const y = candy.y * CELL_SIZE + CELL_SIZE/2;
+                ctx.fillStyle = candy.color;
+                ctx.beginPath();
+                ctx.arc(x, y, CELL_SIZE/2 - 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // Check for matches
+            function checkMatches() {
+                let matches = new Set();
+                
+                // Check horizontal matches
+                for(let y = 0; y < GRID_SIZE; y++) {
+                    for(let x = 0; x < GRID_SIZE-2; x++) {
+                        if(grid[x][y].color === grid[x+1][y].color && 
+                           grid[x][y].color === grid[x+2][y].color) {
+                            matches.add(`${x},${y}`);
+                            matches.add(`${x+1},${y}`);
+                            matches.add(`${x+2},${y}`);
+                        }
+                    }
+                }
+                
+                // Check vertical matches
+                for(let x = 0; x < GRID_SIZE; x++) {
+                    for(let y = 0; y < GRID_SIZE-2; y++) {
+                        if(grid[x][y].color === grid[x][y+1].color && 
+                           grid[x][y].color === grid[x][y+2].color) {
+                            matches.add(`${x},${y}`);
+                            matches.add(`${x},${y+1}`);
+                            matches.add(`${x},${y+2}`);
+                        }
+                    }
+                }
+                
+                // Remove matched candies and create new ones
+                matches.forEach(pos => {
+                    const [x, y] = pos.split(',').map(Number);
+                    grid[x][y].color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                });
+                
+                return matches.size > 0;
+            }
+            
+            // Handle mouse events
+            canvas.addEventListener('mousedown', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
+                const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
+                
+                if(x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                    selectedCandy = grid[x][y];
+                }
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if(selectedCandy) {
+                    const rect = canvas.getBoundingClientRect();
+                    const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
+                    const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
+                    
+                    if(x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                        draggedCandy = grid[x][y];
+                    }
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                if(selectedCandy && draggedCandy && 
+                   Math.abs(selectedCandy.x - draggedCandy.x) + 
+                   Math.abs(selectedCandy.y - draggedCandy.y) === 1) {
+                    // Swap candies
+                    const tempColor = selectedCandy.color;
+                    selectedCandy.color = draggedCandy.color;
+                    draggedCandy.color = tempColor;
+                    
+                    // If no match, swap back
+                    if(!checkMatches()) {
+                        const tempColor = selectedCandy.color;
+                        selectedCandy.color = draggedCandy.color;
+                        draggedCandy.color = tempColor;
+                    }
+                }
+                selectedCandy = null;
+                draggedCandy = null;
+            });
+            
+            function update() {
+                checkMatches();
+            }
+            
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw grid
+                for(let i = 0; i < GRID_SIZE; i++) {
+                    for(let j = 0; j < GRID_SIZE; j++) {
+                        drawCandy(grid[i][j]);
+                    }
+                }
+                
+                // Highlight selected candy
+                if(selectedCandy) {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(
+                        selectedCandy.x * CELL_SIZE, 
+                        selectedCandy.y * CELL_SIZE, 
+                        CELL_SIZE, 
+                        CELL_SIZE
+                    );
+                }
+            }
+            
+            function gameLoop() {
+                update();
+                draw();
+                requestAnimationFrame(gameLoop);
+            }
+            
+            initGrid();
+            gameLoop();
+        </script>
+        
         <br/>
         <p>© Copyright 2024 Freddy Robotics Company. All rights reserved.</p>
         <a href="/updates">Updates</a>
         <br/><br/>
+        
     </div>
     </body>
 </html>
