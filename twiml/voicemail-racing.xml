@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <Response>
+      <Dial action="/twiml/voicemail-racing" method="GET">
+        <Number>+15878342270</Number>
+      </Dial>
+    </Response>
